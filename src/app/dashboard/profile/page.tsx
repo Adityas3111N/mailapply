@@ -127,23 +127,44 @@ export default function ProfilePage() {
         resumeUrl: "",
     });
 
+    const STORAGE_KEY = "mailapply_profile_draft";
+
+    // Load profile: localStorage draft first, then API as base
     useEffect(() => {
         async function loadProfile() {
             try {
                 const res = await fetch("/api/user");
                 if (res.ok) {
                     const data = await res.json();
-                    setProfile(data.user);
-                    if (data.user.role && !majorRoles.includes(data.user.role)) {
-                        setShowCustomRole(true);
-                    }
-                    // Extract extra bio text (anything after the auto-generated part)
-                    if (data.user.bio) {
-                        const autoPrefix = buildAutoBio(data.user.name, data.user.skills, parseInt(data.user.experience) || 0);
-                        if (data.user.bio.startsWith(autoPrefix)) {
-                            setBioExtra(data.user.bio.slice(autoPrefix.length).trim());
-                        } else {
-                            setBioExtra(data.user.bio);
+                    const serverUser = data.user;
+
+                    // Check for a locally cached draft
+                    const cached = localStorage.getItem(STORAGE_KEY);
+                    if (cached) {
+                        try {
+                            const draft = JSON.parse(cached);
+                            // Merge: use draft values over server values
+                            setProfile({ ...serverUser, ...draft.profile, email: serverUser.email });
+                            if (draft.bioExtra !== undefined) setBioExtra(draft.bioExtra);
+                            const mergedRole = draft.profile?.role || serverUser.role;
+                            if (mergedRole && !majorRoles.includes(mergedRole)) {
+                                setShowCustomRole(true);
+                            }
+                        } catch {
+                            setProfile(serverUser);
+                        }
+                    } else {
+                        setProfile(serverUser);
+                        if (serverUser.role && !majorRoles.includes(serverUser.role)) {
+                            setShowCustomRole(true);
+                        }
+                        if (serverUser.bio) {
+                            const autoPrefix = buildAutoBio(serverUser.name, serverUser.skills, parseInt(serverUser.experience) || 0);
+                            if (serverUser.bio.startsWith(autoPrefix)) {
+                                setBioExtra(serverUser.bio.slice(autoPrefix.length).trim());
+                            } else {
+                                setBioExtra(serverUser.bio);
+                            }
                         }
                     }
                 }
@@ -155,6 +176,13 @@ export default function ProfilePage() {
         }
         if (session) loadProfile();
     }, [session]);
+
+    // Auto-save draft to localStorage on every change
+    useEffect(() => {
+        if (!loading) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, bioExtra }));
+        }
+    }, [profile, bioExtra, loading]);
 
     const experienceYears = parseInt(profile.experience) || 0;
     const availableSkills = skillsByRole[profile.role] || genericSkills;
@@ -239,6 +267,7 @@ export default function ProfilePage() {
             });
 
             if (res.ok) {
+                localStorage.removeItem(STORAGE_KEY);
                 setSuccess("Profile updated successfully!");
                 setTimeout(() => setSuccess(""), 3000);
             } else {
@@ -559,8 +588,8 @@ export default function ProfilePage() {
                                                             setShowSuggestions(false);
                                                         }}
                                                         className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer ${i === suggestionIndex
-                                                                ? "bg-primary-50 text-primary-700"
-                                                                : "text-slate-700 hover:bg-slate-50"
+                                                            ? "bg-primary-50 text-primary-700"
+                                                            : "text-slate-700 hover:bg-slate-50"
                                                             }`}
                                                     >
                                                         {s}

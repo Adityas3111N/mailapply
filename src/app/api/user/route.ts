@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
         const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name.trim();
         if (role !== undefined) updateData.role = role.trim();
-        if (experience !== undefined) updateData.experience = experience.trim();
+        if (experience !== undefined) updateData.experience = String(experience).trim();
         if (bio !== undefined) updateData.bio = bio.trim();
         if (skills !== undefined) updateData.skills = skills;
         if (resumeUrl !== undefined) updateData.resumeUrl = resumeUrl;
