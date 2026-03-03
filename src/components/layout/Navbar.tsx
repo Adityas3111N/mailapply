@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Button from "@/components/ui/Button";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { data: session } = useSession();
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100">
@@ -26,29 +28,43 @@ export default function Navbar() {
 
                     {/* Desktop Nav */}
                     <div className="hidden md:flex items-center gap-8">
-                        <Link
-                            href="/features"
-                            className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors"
-                        >
+                        <Link href="/features" className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">
                             Features
                         </Link>
-                        <Link
-                            href="/pricing"
-                            className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors"
-                        >
+                        <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">
                             Pricing
                         </Link>
+
                         <div className="flex items-center gap-3 ml-4">
-                            <Link href="/login">
-                                <Button variant="ghost" size="sm">
-                                    Log in
-                                </Button>
-                            </Link>
-                            <Link href="/signup">
-                                <Button variant="primary" size="sm">
-                                    Get Started Free
-                                </Button>
-                            </Link>
+                            {session ? (
+                                <>
+                                    <Link href="/dashboard">
+                                        <Button variant="primary" size="sm">
+                                            Dashboard
+                                        </Button>
+                                    </Link>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => signOut({ callbackUrl: "/" })}
+                                    >
+                                        Log out
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/login">
+                                        <Button variant="ghost" size="sm">
+                                            Log in
+                                        </Button>
+                                    </Link>
+                                    <Link href="/signup">
+                                        <Button variant="primary" size="sm">
+                                            Get Started Free
+                                        </Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -58,15 +74,7 @@ export default function Navbar() {
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-label="Toggle menu"
                     >
-                        <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                             {mobileOpen ? (
                                 <>
                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -88,31 +96,32 @@ export default function Navbar() {
             {mobileOpen && (
                 <div className="md:hidden border-t border-slate-100 bg-white animate-fade-in">
                     <div className="px-4 py-4 flex flex-col gap-3">
-                        <Link
-                            href="/features"
-                            className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2"
-                            onClick={() => setMobileOpen(false)}
-                        >
+                        <Link href="/features" className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2" onClick={() => setMobileOpen(false)}>
                             Features
                         </Link>
-                        <Link
-                            href="/pricing"
-                            className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2"
-                            onClick={() => setMobileOpen(false)}
-                        >
+                        <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-primary-600 py-2" onClick={() => setMobileOpen(false)}>
                             Pricing
                         </Link>
                         <hr className="border-slate-100" />
-                        <Link href="/login" onClick={() => setMobileOpen(false)}>
-                            <Button variant="ghost" size="sm" className="w-full">
-                                Log in
-                            </Button>
-                        </Link>
-                        <Link href="/signup" onClick={() => setMobileOpen(false)}>
-                            <Button variant="primary" size="sm" className="w-full">
-                                Get Started Free
-                            </Button>
-                        </Link>
+                        {session ? (
+                            <>
+                                <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                                    <Button variant="primary" size="sm" className="w-full">Dashboard</Button>
+                                </Link>
+                                <Button variant="ghost" size="sm" className="w-full" onClick={() => { setMobileOpen(false); signOut({ callbackUrl: "/" }); }}>
+                                    Log out
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/login" onClick={() => setMobileOpen(false)}>
+                                    <Button variant="ghost" size="sm" className="w-full">Log in</Button>
+                                </Link>
+                                <Link href="/signup" onClick={() => setMobileOpen(false)}>
+                                    <Button variant="primary" size="sm" className="w-full">Get Started Free</Button>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
