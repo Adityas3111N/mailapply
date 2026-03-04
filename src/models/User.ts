@@ -14,6 +14,11 @@ export interface IUser extends Document {
     gmailAccessToken: string;
     gmailRefreshToken: string;
     gmailTokenExpiry: number;   // Unix ms timestamp
+    // Auto-apply quota
+    dailyAutoAppliesCount: number;
+    lastAppliedDate: Date;
+    lastAutoSentAt: Date;
+    lastSyncedAt: Date;  // for inbox reply sync throttling
     createdAt: Date;
     updatedAt: Date;
 }
@@ -45,6 +50,10 @@ const UserSchema = new Schema<IUser>(
         gmailAccessToken: { type: String, default: "" },
         gmailRefreshToken: { type: String, default: "" },
         gmailTokenExpiry: { type: Number, default: 0 },
+        dailyAutoAppliesCount: { type: Number, default: 0 },
+        lastAppliedDate: { type: Date, default: null },
+        lastAutoSentAt: { type: Date, default: null },
+        lastSyncedAt: { type: Date, default: null },
     },
     { timestamps: true }
 );

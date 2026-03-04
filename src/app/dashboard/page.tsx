@@ -22,7 +22,6 @@ export default function DashboardOverview() {
     });
 
     useEffect(() => {
-        // Fetch stats from API (will be implemented in Part 7)
         async function fetchStats() {
             try {
                 const res = await fetch("/api/emails/stats");
@@ -35,6 +34,9 @@ export default function DashboardOverview() {
             }
         }
         fetchStats();
+
+        // Background inbox sync — fire and forget, throttled server-side
+        fetch("/api/sync-replies").catch(() => { });
     }, []);
 
     const statCards = [
@@ -99,38 +101,33 @@ export default function DashboardOverview() {
                 <h2 className="text-lg font-semibold text-slate-900 mb-4">
                     Quick Actions
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Link href="/dashboard/jobs">
+                        <div className="p-4 rounded-xl border border-slate-100 hover:border-primary-200 hover:bg-primary-50/30 transition-all duration-200 cursor-pointer">
+                            <div className="text-2xl mb-2">💼</div>
+                            <h3 className="text-sm font-semibold text-slate-900">Recommended Jobs</h3>
+                            <p className="text-xs text-slate-500 mt-1">View your top matched jobs today</p>
+                        </div>
+                    </Link>
                     <Link href="/dashboard/profile">
                         <div className="p-4 rounded-xl border border-slate-100 hover:border-primary-200 hover:bg-primary-50/30 transition-all duration-200 cursor-pointer">
                             <div className="text-2xl mb-2">👤</div>
-                            <h3 className="text-sm font-semibold text-slate-900">
-                                Update Profile
-                            </h3>
-                            <p className="text-xs text-slate-500 mt-1">
-                                Add skills, experience, and resume
-                            </p>
+                            <h3 className="text-sm font-semibold text-slate-900">Update Profile</h3>
+                            <p className="text-xs text-slate-500 mt-1">Add skills, experience, and resume</p>
                         </div>
                     </Link>
                     <Link href="/dashboard/outreach">
                         <div className="p-4 rounded-xl border border-slate-100 hover:border-primary-200 hover:bg-primary-50/30 transition-all duration-200 cursor-pointer">
                             <div className="text-2xl mb-2">✉️</div>
-                            <h3 className="text-sm font-semibold text-slate-900">
-                                New Outreach
-                            </h3>
-                            <p className="text-xs text-slate-500 mt-1">
-                                Generate and send a personalized email
-                            </p>
+                            <h3 className="text-sm font-semibold text-slate-900">New Outreach</h3>
+                            <p className="text-xs text-slate-500 mt-1">Generate and send a personalized email</p>
                         </div>
                     </Link>
-                    <Link href="/dashboard/history">
+                    <Link href="/dashboard/tracker">
                         <div className="p-4 rounded-xl border border-slate-100 hover:border-primary-200 hover:bg-primary-50/30 transition-all duration-200 cursor-pointer">
-                            <div className="text-2xl mb-2">📊</div>
-                            <h3 className="text-sm font-semibold text-slate-900">
-                                View History
-                            </h3>
-                            <p className="text-xs text-slate-500 mt-1">
-                                Track all your sent emails and status
-                            </p>
+                            <div className="text-2xl mb-2">📋</div>
+                            <h3 className="text-sm font-semibold text-slate-900">Track Applications</h3>
+                            <p className="text-xs text-slate-500 mt-1">See where every application stands</p>
                         </div>
                     </Link>
                 </div>

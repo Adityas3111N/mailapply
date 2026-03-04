@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { calcProfileScore } from "@/lib/profileScore";
 
 const navItems = [
     {
@@ -15,11 +17,12 @@ const navItems = [
         ),
     },
     {
-        label: "Profile",
-        href: "/dashboard/profile",
+        label: "Jobs",
+        href: "/dashboard/jobs",
+        badge: "New",
         icon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
             </svg>
         ),
     },
@@ -33,6 +36,16 @@ const navItems = [
         ),
     },
     {
+        label: "Tracker",
+        href: "/dashboard/tracker",
+        badge: "New",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+        ),
+    },
+    {
         label: "History",
         href: "/dashboard/history",
         icon: (
@@ -41,7 +54,58 @@ const navItems = [
             </svg>
         ),
     },
+    {
+        label: "Profile",
+        href: "/dashboard/profile",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+        ),
+    },
 ];
+
+function ProfileScoreWidget() {
+    const [score, setScore] = useState<number | null>(null);
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        fetch("/api/user")
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.user) {
+                    const result = calcProfileScore(data.user);
+                    setScore(result.total);
+                    setIsReady(result.isReady);
+                }
+            })
+            .catch(() => { });
+    }, []);
+
+    if (score === null) return null;
+
+    const color = score >= 70 ? "#22c55e" : score >= 50 ? "#f59e0b" : "#ef4444";
+    const label = score >= 70 ? "Profile Ready" : score >= 50 ? "Almost Ready" : "Needs Work";
+
+    return (
+        <Link href="/dashboard/profile" className="block mx-3 mb-3 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-primary-300 hover:bg-primary-50 transition-all group">
+            <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-slate-600 group-hover:text-primary-700">Profile Strength</span>
+                <span className="text-xs font-bold" style={{ color }}>{score}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${score}%`, backgroundColor: color }}
+                />
+            </div>
+            <p className="text-[10px] mt-1.5 font-medium" style={{ color }}>
+                {isReady ? "✓ " : "→ "}{label}
+                {!isReady && <span className="text-slate-400"> — click to improve</span>}
+            </p>
+        </Link>
+    );
+}
 
 export default function DashboardLayout({
     children,
@@ -69,7 +133,7 @@ export default function DashboardLayout({
                 </Link>
 
                 {/* Nav Items */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                     {navItems.map((item) => {
                         const isActive =
                             item.href === "/dashboard"
@@ -92,10 +156,18 @@ export default function DashboardLayout({
                                     {item.icon}
                                 </span>
                                 {item.label}
+                                {"badge" in item && item.badge && (
+                                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary-100 text-primary-700">
+                                        {item.badge}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
+
+                {/* Profile Strength Widget */}
+                <ProfileScoreWidget />
 
                 {/* User Info */}
                 <div className="p-4 border-t border-slate-100">
@@ -148,11 +220,11 @@ export default function DashboardLayout({
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex flex-col items-center gap-1 py-1 px-3 ${isActive ? "text-primary-600" : "text-slate-400"
+                                    className={`flex flex-col items-center gap-1 py-1 px-2 ${isActive ? "text-primary-600" : "text-slate-400"
                                         }`}
                                 >
                                     {item.icon}
-                                    <span className="text-[10px] font-medium">{item.label}</span>
+                                    <span className="text-[9px] font-medium">{item.label}</span>
                                 </Link>
                             );
                         })}
@@ -160,7 +232,7 @@ export default function DashboardLayout({
                 </div>
 
                 {/* Page Content */}
-                <div className="p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+                <div className="p-4 sm:p-6 lg:p-8 pb-24 md:pb-8">
                     {children}
                 </div>
             </main>

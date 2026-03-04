@@ -42,24 +42,28 @@ function buildTemplateEmail(
     company: GenerateRequest,
     recruiter: Recruiter
 ): { subject: string; body: string } {
-    const skillsList = profile.skills.slice(0, 5).join(", ");
+    const skillsList = profile.skills.slice(0, 3).join(", ");
+    const expText = profile.experience && profile.experience !== "0"
+        ? `${profile.experience} year${profile.experience === "1" ? "" : "s"} of experience`
+        : "a fresher eager to prove myself";
 
-    const subject = `Application for ${company.jobTitle} at ${company.companyName} \u2014 ${profile.name}`;
+    // Build a job-specific hook if job description is available
+    const jobHook = company.jobDescription
+        ? `I came across the ${company.jobTitle} role at ${company.companyName} and the focus on ${company.jobDescription.split(" ").slice(0, 8).join(" ")}... immediately caught my attention.`
+        : `I came across the ${company.jobTitle} role at ${company.companyName} and couldn\u2019t help but reach out directly.`;
+
+    const subject = `${profile.name} \u2014 ${skillsList || profile.role} \u2014 ${company.jobTitle} at ${company.companyName}`;
 
     const body = [
         `Hi ${greeting(recruiter)},`,
         "",
-        `I hope this message finds you well. I came across the ${company.jobTitle} opportunity at ${company.companyName} and I\u2019m writing to express my strong interest.`,
+        jobHook,
         "",
-        `${profile.experience
-            ? `With ${profile.experience} of experience`
-            : "As a motivated professional"} specializing in ${skillsList || profile.role || "my field"}, I believe I would be a great fit for this role.${profile.bio ? "\n\n" + profile.bio : ""}`,
+        `I bring ${expText} in ${skillsList || profile.role || "my field"}.${profile.bio ? " " + profile.bio : ""}`,
         "",
-        `I\u2019d love the opportunity to discuss how my skills can contribute to ${company.companyName}\u2019s goals. I\u2019ve attached my resume for your review.`,
+        `I\u2019d love a quick 15-minute chat to show you how I can contribute. I\u2019ve attached my resume for reference.`,
         "",
-        "Looking forward to hearing from you.",
-        "",
-        "Best regards,",
+        "Looking forward to connecting,",
         profile.name,
     ].join("\n");
 
@@ -75,47 +79,49 @@ async function buildAIEmail(
 ): Promise<{ subject: string; body: string }> {
     const recruiterGreeting = greeting(recruiter);
 
-    const promptParts = [
-        "Generate a professional job application email with the following details:",
-        "",
-        "Applicant:",
-        `- Name: ${profile.name}`,
-        `- Role: ${profile.role}`,
-        `- Experience: ${profile.experience}`,
-        `- Skills: ${profile.skills.join(", ")}`,
-        `- Bio: ${profile.bio}`,
-        "",
-        "Target:",
-        `- Company: ${company.companyName}`,
-        `- Position: ${company.jobTitle}`,
-        `- Recruiter Name: ${recruiterGreeting}`,
-        `- Recruiter Email: ${recruiter.email}`,
-        company.jobDescription ? `- Job Description: ${company.jobDescription}` : "",
-        "",
-        "Requirements:",
-        "- Write a concise, professional email (under 200 words)",
-        `- Address the recruiter as "${recruiterGreeting}" in the greeting`,
-        "- Mention relevant skills for the role",
-        "- Mention experience level",
-        "- End with a call to action",
-        "- Professional but warm tone",
-        "- Do NOT include subject line in the body",
-        "",
-        "Return your response in this exact JSON format:",
-        '{"subject": "...", "body": "..."}',
-    ];
+    const jobDescSnippet = company.jobDescription
+        ? company.jobDescription.slice(0, 600)
+        : "";
+
+    const prompt = `You are an expert cold email writer helping job seekers stand out. Write a concise, personalized cold outreach email for a job application.
+
+APPLICANT
+- Name: ${profile.name}
+- Target Role: ${profile.role}
+- Experience: ${profile.experience || "entry level / fresher"}
+- Top Skills: ${profile.skills.join(", ") || "(not specified)"}
+- About: ${profile.bio || "(no bio provided)"}
+
+TARGET
+- Company: ${company.companyName}
+- Position applied for: ${company.jobTitle}
+- Recruiter: ${recruiterGreeting}
+${jobDescSnippet ? `- Job Description Snippet:\n${jobDescSnippet}` : ""}
+
+RULES (follow strictly):
+1. Email body must be under 180 words.
+2. NEVER start with "I hope this finds you well" or "I am writing to express my interest" — use a punchy, specific opener instead.
+3. The body MUST reference at least one specific thing from the job description or company (if provided). Do not be generic.
+4. Subject line must be specific and compelling — include the applicant's name and one differentiating fact (a skill, a number, an achievement). NEVER use generic subjects like "Job Application" or "Regarding the position".
+5. Address the recruiter by first name: "${recruiterGreeting}".
+6. End with a clear, confident call to action.
+7. Do NOT add the subject line inside the email body.
+8. Tone: confident, human, professional — NOT robotic or overly formal.
+
+Return ONLY valid JSON in this exact format:
+{"subject": "...", "body": "..."}`;
 
     const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: process.env.AI_MODEL ?? "openai/gpt-4o-mini",
         messages: [
             {
                 role: "system",
-                content: "You are a professional email writer for job applications. Return only valid JSON.",
+                content: "You write highly personalized, effective cold outreach emails. Return only valid JSON with keys \"subject\" and \"body\".",
             },
-            { role: "user", content: promptParts.join("\n") },
+            { role: "user", content: prompt },
         ],
-        temperature: 0.7,
-        max_tokens: 500,
+        temperature: 0.75,
+        max_tokens: 600,
     });
 
     const content = completion.choices[0]?.message?.content?.trim() || "";
@@ -158,11 +164,18 @@ export async function POST(req: NextRequest) {
             bio: user.bio,
         };
 
-        const useAI = Boolean(process.env.OPENAI_API_KEY);
+        const useAI = Boolean(process.env.OPENROUTER_API_KEY);
         let openaiClient: import("openai").default | null = null;
         if (useAI) {
             const OpenAI = (await import("openai")).default;
-            openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            openaiClient = new OpenAI({
+                apiKey: process.env.OPENROUTER_API_KEY,
+                baseURL: "https://openrouter.ai/api/v1",
+                defaultHeaders: {
+                    "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
+                    "X-Title": "MailApply",
+                },
+            });
         }
 
         // Generate a personalized email for each recruiter

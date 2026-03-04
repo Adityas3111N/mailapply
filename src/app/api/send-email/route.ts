@@ -122,6 +122,7 @@ export async function POST(req: NextRequest) {
             emails.map(async ({ to, subject, message }) => {
                 let sent = false;
                 let sendError = "";
+                let sentMessageId = "";
                 try {
                     const mailOptions: nodemailer.SendMailOptions = {
                         from: `${user.name} <${user.email}>`,
@@ -150,8 +151,9 @@ export async function POST(req: NextRequest) {
                         }
                     }
 
-                    await transporter.sendMail(mailOptions);
+                    const info = await transporter.sendMail(mailOptions);
                     sent = true;
+                    sentMessageId = (info.messageId as string) ?? "";
                 } catch (err) {
                     sendError = err instanceof Error ? err.message : String(err);
                     console.error(`Failed to send to ${to}:`, sendError);
@@ -166,6 +168,7 @@ export async function POST(req: NextRequest) {
                     subject,
                     message,
                     status: sent ? "sent" : "failed",
+                    messageId: sentMessageId,
                     sentAt: sent ? new Date() : undefined,
                 });
 

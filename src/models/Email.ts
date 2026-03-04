@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export type EmailStatus = "pending" | "sent" | "replied" | "interview" | "failed";
+export type EmailStatus = "pending" | "sent" | "replied" | "interview" | "assignment" | "rejected" | "offer" | "failed";
 
 export interface IEmail extends Document {
     _id: mongoose.Types.ObjectId;
@@ -12,6 +12,8 @@ export interface IEmail extends Document {
     subject: string;
     message: string;
     status: EmailStatus;
+    messageId: string;      // Nodemailer message-id for reply tracking
+    replySnippet: string;   // First few words of the recruiter's reply
     sentAt: Date;
     repliedAt?: Date;
     createdAt: Date;
@@ -57,9 +59,11 @@ const EmailSchema = new Schema<IEmail>(
         },
         status: {
             type: String,
-            enum: ["pending", "sent", "replied", "interview", "failed"],
+            enum: ["pending", "sent", "replied", "interview", "assignment", "rejected", "offer", "failed"],
             default: "pending",
         },
+        messageId: { type: String, default: "" },
+        replySnippet: { type: String, default: "" },
         sentAt: {
             type: Date,
         },
@@ -70,7 +74,11 @@ const EmailSchema = new Schema<IEmail>(
     { timestamps: true }
 );
 
-const Email: Model<IEmail> =
-    mongoose.models.Email || mongoose.model<IEmail>("Email", EmailSchema);
+// Drop cache to pick up schema changes on hot reload
+if (mongoose.models.Email) {
+    delete (mongoose.models as Record<string, unknown>)["Email"];
+}
+
+const Email = mongoose.model<IEmail>("Email", EmailSchema);
 
 export default Email;
