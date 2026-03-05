@@ -100,7 +100,6 @@ export async function GET() {
             return true;
         });
 
-        // Score and rank — return ALL matching jobs (no limit)
         const scored = filtered
             .map((j) => ({
                 ...j,
@@ -111,7 +110,33 @@ export async function GET() {
             }))
             .sort((a, b) => b.matchScore - a.matchScore);
 
-        return NextResponse.json({ jobs: scored, total: scored.length });
+        const FREE_LIMIT = 5;
+        const PREMIUM_LIMIT = 50;
+
+        function isSameDay(d1: Date, d2: Date) {
+            return (
+                d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate()
+            );
+        }
+
+        const isPremium = false; // TODO: replace with real premium check when billing is added
+        const dailyLimit = isPremium ? PREMIUM_LIMIT : FREE_LIMIT;
+
+        const today = new Date();
+        const lastDate = user.lastAppliedDate ? new Date(user.lastAppliedDate) : null;
+        const currentCount = lastDate && isSameDay(lastDate, today)
+            ? (user.dailyAutoAppliesCount ?? 0)
+            : 0;
+
+        const quota = {
+            used: currentCount,
+            limit: dailyLimit,
+            remaining: dailyLimit - currentCount,
+        };
+
+        return NextResponse.json({ jobs: scored, total: scored.length, quota });
     } catch (error) {
         console.error("Jobs fetch error:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });

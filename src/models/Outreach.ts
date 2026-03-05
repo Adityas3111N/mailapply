@@ -69,7 +69,7 @@ const OutreachSchema = new Schema<IOutreach>(
         notes: {
             type: String,
             default: "",
-            maxlength: [500, "Notes cannot exceed 500 characters"],
+            maxlength: [10000, "Notes cannot exceed 10000 characters"],
         },
     },
     { timestamps: true }

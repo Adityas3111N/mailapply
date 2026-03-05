@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
@@ -112,7 +112,7 @@ interface ProfileData {
     };
 }
 
-export default function ProfilePage() {
+function ProfileDataContent() {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
@@ -897,5 +897,17 @@ export default function ProfilePage() {
                 </Button>
             </form>
         </div>
+    );
+}
+
+export default function ProfilePage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center h-64">
+                <div className="w-8 h-8 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin" />
+            </div>
+        }>
+            <ProfileDataContent />
+        </Suspense>
     );
 }

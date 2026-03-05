@@ -149,6 +149,7 @@ export default function JobsPage() {
                     setError(data.error);
                 } else {
                     setJobs(data.jobs ?? []);
+                    if (data.quota) setQuota(data.quota);
                     if (data.message) setMessage(data.message);
                 }
             })
@@ -224,90 +225,92 @@ export default function JobsPage() {
     };
 
     return (
-        <div className="max-w-2xl animate-fade-in">
-            <div className="mb-8 flex items-start justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
-                        Recommended Jobs
-                    </h1>
-                    <p className="text-slate-500 mt-1">
-                        Top matches based on your skills and role. Updated twice daily.
-                    </p>
-                </div>
-                <span className="shrink-0 mt-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-100 text-primary-700">
-                    Today
-                </span>
-            </div>
-
-            {loading && (
-                <div className="space-y-4">
-                    {[...Array(3)].map((_, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
-                            <div className="h-4 bg-slate-100 rounded w-3/4 mb-2" />
-                            <div className="h-3 bg-slate-100 rounded w-1/2 mb-4" />
-                            <div className="h-1.5 bg-slate-100 rounded w-full" />
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {!loading && error && (
-                <div className="p-4 rounded-xl bg-danger-100 text-danger-700 text-sm font-medium">
-                    {error}
-                </div>
-            )}
-
-            {!loading && !error && message && jobs.length === 0 && (
-                <div className="text-center py-16">
-                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-                        </svg>
-                    </div>
-                    <h3 className="text-slate-700 font-semibold">{message}</h3>
-                    <Link href="/dashboard/profile" className="mt-3 inline-block text-sm font-semibold text-primary-600 hover:text-primary-700">
-                        Complete your profile →
-                    </Link>
-                </div>
-            )}
-
-            {!loading && !error && jobs.length === 0 && !message && (
-                <div className="text-center py-16">
-                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                        </svg>
-                    </div>
-                    <h3 className="text-slate-700 font-semibold">No jobs available yet</h3>
-                    <p className="text-slate-500 text-sm mt-1">
-                        The job feed refreshes at 6 AM and 6 PM daily. Check back soon!
-                    </p>
-                </div>
-            )}
-
-            {!loading && jobs.length > 0 && (
-                <div className="space-y-4">
-                    {quota && (
-                        <div className="flex items-center justify-between px-1">
-                            <span className="text-xs font-semibold text-slate-500">Auto Apply Quota</span>
-                            <span className="text-xs font-bold text-slate-700">{quota.used} / {quota.limit} used today</span>
-                        </div>
-                    )}
-                    {confirmSuccess && (
-                        <div className="p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm font-medium">{confirmSuccess}</div>
-                    )}
-                    {jobs.map((job) => (
-                        <JobCard key={job._id} job={job} onDraft={handleDraft} onAutoApply={handleAutoApply} />
-                    ))}
-
-                    <div className="text-center pt-4">
-                        <p className="text-xs text-slate-400">
-                            Showing your top {jobs.length} match{jobs.length !== 1 ? "es" : ""} for today.
-                            Refreshes at 6 AM and 6 PM.
+        <>
+            <div className="max-w-2xl animate-fade-in">
+                <div className="mb-8 flex items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
+                            Recommended Jobs
+                        </h1>
+                        <p className="text-slate-500 mt-1">
+                            Top matches based on your skills and role. Updated twice daily.
                         </p>
                     </div>
+                    <span className="shrink-0 mt-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-100 text-primary-700">
+                        Today
+                    </span>
                 </div>
-            )}
+
+                {loading && (
+                    <div className="space-y-4">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
+                                <div className="h-4 bg-slate-100 rounded w-3/4 mb-2" />
+                                <div className="h-3 bg-slate-100 rounded w-1/2 mb-4" />
+                                <div className="h-1.5 bg-slate-100 rounded w-full" />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {!loading && error && (
+                    <div className="p-4 rounded-xl bg-danger-100 text-danger-700 text-sm font-medium">
+                        {error}
+                    </div>
+                )}
+
+                {!loading && !error && message && jobs.length === 0 && (
+                    <div className="text-center py-16">
+                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                            </svg>
+                        </div>
+                        <h3 className="text-slate-700 font-semibold">{message}</h3>
+                        <Link href="/dashboard/profile" className="mt-3 inline-block text-sm font-semibold text-primary-600 hover:text-primary-700">
+                            Complete your profile →
+                        </Link>
+                    </div>
+                )}
+
+                {!loading && !error && jobs.length === 0 && !message && (
+                    <div className="text-center py-16">
+                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <h3 className="text-slate-700 font-semibold">No jobs available yet</h3>
+                        <p className="text-slate-500 text-sm mt-1">
+                            The job feed refreshes at 6 AM and 6 PM daily. Check back soon!
+                        </p>
+                    </div>
+                )}
+
+                {!loading && jobs.length > 0 && (
+                    <div className="space-y-4">
+                        {quota && (
+                            <div className="flex items-center justify-between px-1">
+                                <span className="text-xs font-semibold text-slate-500">Auto Apply Quota</span>
+                                <span className="text-xs font-bold text-slate-700">{quota.used} / {quota.limit} used today</span>
+                            </div>
+                        )}
+                        {confirmSuccess && (
+                            <div className="p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm font-medium">{confirmSuccess}</div>
+                        )}
+                        {jobs.map((job) => (
+                            <JobCard key={job._id} job={job} onDraft={handleDraft} onAutoApply={handleAutoApply} />
+                        ))}
+
+                        <div className="text-center pt-4">
+                            <p className="text-xs text-slate-400">
+                                Showing your top {jobs.length} match{jobs.length !== 1 ? "es" : ""} for today.
+                                Refreshes at 6 AM and 6 PM.
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {/* Auto Apply Preview Modal */}
             {preview && (
@@ -367,6 +370,6 @@ export default function JobsPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

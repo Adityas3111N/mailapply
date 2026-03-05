@@ -86,27 +86,50 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Job not found" }, { status: 404 });
         }
 
-        // Generate email using the AI
-        const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3001";
-        const genRes = await fetch(`${baseUrl}/api/generate-email`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                companyName: job.company,
-                recruiters: [{ email: "", name: "" }], // will use a placeholder — user fills in recruiter on preview
-                jobTitle: job.title,
-                jobDescription: job.description,
-            }),
-        });
+        // Generate email logic locally to avoid internal fetch deadlock/ECONNREFUSED
+        const profile = {
+            name: user.name,
+            role: user.role,
+            experience: user.experience,
+            skills: user.skills,
+            bio: user.bio,
+        };
+        const companyData = {
+            companyName: job.company,
+            recruiters: [{ email: "", name: "" }],
+            jobTitle: job.title,
+            jobDescription: job.description,
+        };
 
-        if (!genRes.ok) {
-            return NextResponse.json({ error: "Failed to generate email" }, { status: 500 });
+        const useAI = Boolean(process.env.OPENROUTER_API_KEY);
+        let result: { subject: string; body: string };
+        let generated: { subject: string; body: string } | undefined;
+
+        if (useAI) {
+            try {
+                const OpenAI = (await import("openai")).default;
+                const openaiClient = new OpenAI({
+                    apiKey: process.env.OPENROUTER_API_KEY,
+                    baseURL: "https://openrouter.ai/api/v1",
+                    defaultHeaders: {
+                        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+                        "X-Title": "MailApply",
+                    },
+                });
+                const { buildAIEmail, buildTemplateEmail } = await import("@/lib/emailGenerator");
+                result = await buildAIEmail(openaiClient, profile, companyData, companyData.recruiters[0]);
+            } catch (error) {
+                console.error("AI Email error in auto-apply:", error);
+                const { buildTemplateEmail } = await import("@/lib/emailGenerator");
+                result = buildTemplateEmail(profile, companyData, companyData.recruiters[0]);
+            }
+        } else {
+            const { buildTemplateEmail } = await import("@/lib/emailGenerator");
+            result = buildTemplateEmail(profile, companyData, companyData.recruiters[0]);
         }
 
-        const { emails } = await genRes.json();
-        const generated = emails?.[0];
-
-        if (!generated) {
+        generated = result;
+        if (!generated || !generated.subject) {
             return NextResponse.json({ error: "No email generated" }, { status: 500 });
         }
 
