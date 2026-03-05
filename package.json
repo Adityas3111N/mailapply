@@ -12,6 +12,8 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "framer-motion": "^12.34.5",
+    "gray-matter": "^4.0.3",
+    "marked": "^17.0.4",
     "mongoose": "^9.2.3",
     "next": "16.1.6",
     "next-auth": "^4.24.13",

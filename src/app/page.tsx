@@ -99,6 +99,31 @@ export default function LandingPage() {
     <>
       <Navbar />
 
+      {/* JSON-LD Schema for Google Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "MailApply",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            description: "An AI-powered job application outreach platform that generates tailored emails and sends them directly to recruiters.",
+            url: "https://mailapply.in",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD"
+            },
+            creator: {
+              "@type": "Organization",
+              name: "MailApply"
+            }
+          }),
+        }}
+      />
+
       {/* ══════════ HERO ══════════ */}
       <section className="relative min-h-screen flex items-center justify-center bg-hero-gradient overflow-hidden pt-16">
         {/* Decorative orbs */}

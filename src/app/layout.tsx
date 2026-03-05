@@ -16,24 +16,49 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "MailApply – Smart Job Email Outreach Platform",
+  metadataBase: new URL('https://mailapply.in'),
+  title: {
+    default: "MailApply – Smart AI Job Application & Cold Email Platform",
+    template: "%s | MailApply"
+  },
   description:
-    "Generate personalized job application emails, send them directly to recruiters, and track your outreach — all in one dashboard.",
+    "Generate personalized job application emails using AI, send them directly to recruiters, and track your cold email outreach effortlessly — all in one dashboard.",
   keywords: [
-    "job application",
-    "email outreach",
-    "cold email",
+    "AI job application generator",
+    "cold email recruiters template",
+    "auto apply to jobs software",
+    "track job applications online",
     "job search",
     "recruiter email",
-    "career",
     "MailApply",
   ],
+  authors: [{ name: "Aditya Singh" }],
+  creator: "MailApply",
   openGraph: {
-    title: "MailApply – Smart Job Email Outreach Platform",
+    title: "MailApply – Smart AI Job Email Outreach Platform",
     description:
-      "Generate personalized job application emails, send them directly to recruiters, and track your outreach.",
+      "Generate personalized job application emails, send them directly to recruiters, and track your outreach seamlessly.",
     type: "website",
-    url: "https://mailapply.com",
+    url: "https://mailapply.in",
+    siteName: "MailApply",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MailApply – Land your dream job with AI cold emails.",
+    description: "Automate your job search. Generate and send highly personalized outreach emails to recruiters instantly.",
+    creator: "@mailapply",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
