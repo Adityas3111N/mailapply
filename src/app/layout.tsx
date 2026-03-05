@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import AuthProvider from "@/components/providers/AuthProvider";
+import Analytics from "@/components/analytics/Analytics";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,6 +43,17 @@ export const metadata: Metadata = {
     url: "https://mailapply.in",
     siteName: "MailApply",
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "MailApply - AI Powered Job Outreach Dashboard",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://mailapply.in",
   },
   twitter: {
     card: "summary_large_image",
@@ -72,6 +84,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} antialiased`}>
         <AuthProvider>
           {children}
+          <Analytics />
         </AuthProvider>
       </body>
     </html>

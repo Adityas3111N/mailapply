@@ -20,7 +20,7 @@ async function classifyReply(body: string): Promise<ReplyCategory> {
             apiKey,
             baseURL: "https://openrouter.ai/api/v1",
             defaultHeaders: {
-                "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
+                "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "https://mailapply.in",
                 "X-Title": "MailApply",
             },
         });
