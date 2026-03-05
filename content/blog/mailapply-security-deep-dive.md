@@ -1,9 +1,9 @@
----
 title: "Deep Dive: How MailApply Secures Your Gmail"
 date: "2026-03-05"
 excerpt: "Security is our top priority. Learn how we use Google OAuth2 and AES-256 encryption to keep your inbox and personal data safe."
 author: "MailApply Security"
 category: "Security"
+coverImage: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
 ---
 
 At MailApply, we understand that your professional email is your most valuable asset. That's why we built our platform with security as the foundation.

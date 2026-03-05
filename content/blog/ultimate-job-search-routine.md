@@ -1,9 +1,9 @@
----
 title: "The Ultimate Daily Job Search Routine with AI"
 date: "2026-03-05"
 excerpt: "Consistency beats intensity. Here is a 30-minute daily routine to keep your application pipeline full without burning out."
 author: "MailApply Team"
 category: "Productivity"
+coverImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4"
 ---
 
 Job hunting shouldn't be a 40-hour-a-week job. If you use the right tools, you can stay ahead in just 30 minutes a day.

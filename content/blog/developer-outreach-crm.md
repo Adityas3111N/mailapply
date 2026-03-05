@@ -1,9 +1,9 @@
----
 title: "Why Every Developer Needs a Cold Outreach CRM"
 date: "2026-03-05"
 excerpt: "Searching for a job is a sales process. Learn why tracking your applications in a real dashboard is the key to consistent results."
 author: "MailApply Team"
 category: "Product"
+coverImage: "https://images.unsplash.com/photo-1551836022-d5d88e9218df"
 ---
 
 Most developers keep track of their job search in a messy spreadsheet or—worse—in their head. This lead to forgotten follow-ups and missed opportunities.

@@ -1,9 +1,9 @@
----
 title: "5 Tips for Personalizing Your Outreach with AI"
 date: "2026-03-05"
 excerpt: "Personalization at scale is difficult. These 5 tips will help you use MailApply to create emails that feel human, direct, and impossible to ignore."
 author: "MailApply Team"
 category: "Tips"
+coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
 ---
 
 Writing a perfect cold email is an art. Here are 5 ways to ensure your AI-generated emails get the best results:

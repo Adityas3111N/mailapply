@@ -1,9 +1,9 @@
----
 title: "Mastering the 'Hook-Value-Ask' Email Framework"
 date: "2026-03-05"
 excerpt: "Every high-converting email follows a simple structure. Discover the framework MailApply uses to help you get more recruiter replies."
 author: "MailApply Team"
 category: "Tips"
+coverImage: "https://images.unsplash.com/photo-1557200134-90327ee9fafa"
 ---
 
 The secret to a 50% open rate isn't magic—it's structure. At MailApply, our AI is trained on the 'Hook-Value-Ask' framework.

@@ -1,9 +1,9 @@
----
 title: "How AI is Changing the Cold Email Game in 2026"
 date: "2026-03-05"
 excerpt: "Traditional cold emailing is dead. Discover how AI-powered personalization is helping job seekers bypass the noise and land interviews instantly."
 author: "MailApply Team"
 category: "AI & Tech"
+coverImage: "https://images.unsplash.com/photo-1484417894907-623942c8ee29"
 ---
 
 The era of 'copy-paste' templates is over. In 2026, recruiters are inundated with thousands of generic emails daily. If your outreach doesn't stand out in the first 2 seconds, it’s archived.

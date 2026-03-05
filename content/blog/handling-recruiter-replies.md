@@ -1,9 +1,9 @@
----
 title: "How to Handle Recruiter Replies Like a Pro"
 date: "2026-03-05"
 excerpt: "The first reply is just the beginning. Learn how to transition from a cold email to a scheduled interview without losing momentum."
 author: "MailApply Team"
 category: "Career"
+coverImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
 ---
 
 Congratulations! A recruiter has replied to your MailApply email. Now what? 
