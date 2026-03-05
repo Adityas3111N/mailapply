@@ -16,17 +16,17 @@ export default function BlogIndex() {
         <div className="bg-slate-50 min-h-screen flex flex-col">
             <Navbar />
 
-            <main className="flex-grow pt-32 pb-24">
-                <div className="max-w-5xl mx-auto px-6">
-                    <header className="mb-16 text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold font-heading text-slate-900 mb-4">
+            <main className="flex-grow pt-24 md:pt-32 pb-16 md:pb-24">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6">
+                    <header className="mb-12 md:mb-16 text-center">
+                        <h1 className="text-3xl md:text-5xl font-bold font-heading text-slate-900 mb-4">
                             Resources & Insights
                         </h1>
-                        <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-6">
+                        <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6">
                             Master the art of job outreach. Tips from recruiters and career experts on how to land your next role.
                         </p>
                         <Link href="/blog/new">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
                                 ✍️ Write New Article
                             </Button>
                         </Link>

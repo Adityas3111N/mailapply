@@ -63,11 +63,11 @@ export default function NewBlogPost() {
         <div className="bg-slate-50 min-h-screen flex flex-col">
             <Navbar />
 
-            <main className="flex-grow pt-32 pb-24">
-                <div className="max-w-3xl mx-auto px-6">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold font-heading text-slate-900">Write New Article</h1>
-                        <p className="text-slate-500 mt-1">Create a new article for the MailApply blog.</p>
+            <main className="flex-grow pt-24 md:pt-32 pb-16 md:pb-24">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6">
+                    <div className="mb-6 md:mb-8">
+                        <h1 className="text-2xl md:text-3xl font-bold font-heading text-slate-900">Write New Article</h1>
+                        <p className="text-sm md:text-base text-slate-500 mt-1">Create a new article for the MailApply blog.</p>
                     </div>
 
                     {error && (
@@ -83,7 +83,7 @@ export default function NewBlogPost() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 md:p-6 space-y-4">
                             <Input
                                 label="Title"
                                 value={formData.title}
@@ -132,11 +132,11 @@ export default function NewBlogPost() {
                             />
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                             <Button
                                 type="submit"
                                 variant="primary"
-                                className="flex-1"
+                                className="flex-1 w-full"
                                 disabled={loading}
                             >
                                 {loading ? "Publishing..." : "Publish Article"}
@@ -144,6 +144,7 @@ export default function NewBlogPost() {
                             <Button
                                 type="button"
                                 variant="outline"
+                                className="w-full sm:w-auto"
                                 onClick={() => router.back()}
                             >
                                 Cancel

@@ -43,25 +43,25 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <div className="bg-white min-h-screen">
             <Navbar />
 
-            <main className="pt-32 pb-24">
-                <article className="max-w-3xl mx-auto px-6">
+            <main className="pt-24 md:pt-32 pb-16 md:pb-24">
+                <article className="max-w-3xl mx-auto px-4 sm:px-6">
                     <Link
                         href="/blog"
-                        className="inline-flex items-center text-sm font-semibold text-primary-600 hover:text-primary-700 mb-8 group"
+                        className="inline-flex items-center text-sm font-semibold text-primary-600 hover:text-primary-700 mb-6 md:mb-8 group"
                     >
                         <span className="mr-2 group-hover:-translate-x-1 transition-transform">←</span> Back to Blog
                     </Link>
 
-                    <header className="mb-12">
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-bold uppercase tracking-widest">
+                    <header className="mb-8 md:mb-12">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                            <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-[10px] md:text-xs font-bold uppercase tracking-widest">
                                 {post.category}
                             </span>
-                            <span className="text-slate-400 text-sm">•</span>
-                            <time className="text-slate-400 text-sm font-medium">{post.date}</time>
+                            <span className="text-slate-400 text-sm hidden sm:inline">•</span>
+                            <time className="text-slate-400 text-xs md:text-sm font-medium">{post.date}</time>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-bold font-heading text-slate-900 leading-tight mb-8">
+                        <h1 className="text-2xl md:text-5xl font-bold font-heading text-slate-900 leading-tight mb-6 md:mb-8">
                             {post.title}
                         </h1>
 
